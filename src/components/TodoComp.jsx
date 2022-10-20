@@ -23,6 +23,7 @@ const initstate = {
   ], // todoitem을 넣을 공간
   // todo값을 입력받을 todoInput
   todoInput: "",
+  countAll: 2,
 };
 
 function reducer(state, action) {
@@ -60,17 +61,29 @@ function reducer(state, action) {
       };
     case "deletelist":
       // id값을 가져와, id값과 같은 객체를 제외하고 배열 생성
-      const newTodolist = state.todolist.filter(
+      const delTodoList = state.todolist.filter(
         (todoitem) => todoitem.id != action.id
       );
       return {
         ...state,
-        todolist: newTodolist,
+        todolist: delTodoList,
       };
     case "todoInput":
       return {
         ...state,
         todoInput: action.payload,
+      };
+    case "todoAdd":
+      // 객체를 만들어, todolist에 연결하여 새로운 배열을 만듬
+      const addTodoList = state.todolist.concat({
+        done: false,
+        todo: state.todoInput,
+        id: state.countAll + 1,
+      });
+      return {
+        ...state,
+        todolist: addTodoList,
+        countAll: state.countAll + 1,
       };
     default: // 다른 값이 들어왔을 때 현재 state를 유지하고 오류를 알려준다
       console.error("존재하지 않는 action.type");
@@ -88,7 +101,13 @@ const TodoComp = () => {
           dispatch({ type: "todoInput", payload: e.target.value });
         }}
       />
-      <button>+</button>
+      <button
+        onClick={() => {
+          dispatch({ type: "todoAdd" });
+        }}
+      >
+        +
+      </button>
 
       <ul>
         <li>
@@ -106,7 +125,11 @@ const TodoComp = () => {
         </li>
         {/* TodoItemComp를 만들어 map을 통해 내용 출력 */}
         {state.todolist.map((todoitem) => (
-          <TodoItemComp todoitem={todoitem} dispatch={dispatch} />
+          <TodoItemComp
+            key={todoitem.id}
+            todoitem={todoitem}
+            dispatch={dispatch}
+          />
         ))}
       </ul>
     </div>
