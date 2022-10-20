@@ -1,4 +1,5 @@
 import { useReducer } from "react";
+import TodoItemComp from "./TodoItemComp";
 
 const initstate = {
   // todoitem의 형태 확인 : 1개의 todo값을 가지고 있음
@@ -8,7 +9,18 @@ const initstate = {
     id: 1,
   },
   // 배열을 통해 여러개의 todoitem을 사용
-  todolist: [], // todoitem을 넣을 공간
+  todolist: [
+    {
+      done: true,
+      todo: "1st todo",
+      id: 1,
+    },
+    {
+      done: false,
+      todo: "2nd todo",
+      id: 2,
+    },
+  ], // todoitem을 넣을 공간
   // todo값을 입력받을 todoInput
   todoInput: "",
 };
@@ -22,6 +34,29 @@ function reducer(state, action) {
           ...state.todoitem,
           done: !state.todoitem.done,
         },
+      };
+    case "checkedlist":
+      // list안에서 객체 하나를 찾아 객체의 done을 !값으로 변경
+      // 객체 하나를 찾는 방법 : id값으로 통해 찾는다
+      const newTodoList = state.todolist.map((todoitem) => {
+        if (todoitem.id == action.id) {
+          // 새로 객체를 만들어 done을 바꿈
+          todoitem = {
+            ...todoitem,
+            done: !todoitem.done,
+          };
+        }
+        return todoitem;
+      });
+      //
+      const newTodoList2 = state.todolist.map((todoitem) =>
+        todoitem.id == action.id
+          ? { ...todoitem, done: !todoitem.done }
+          : todoitem
+      );
+      return {
+        ...state,
+        todolist: newTodoList,
       };
     case "todoInput":
       return {
@@ -55,11 +90,15 @@ const TodoComp = () => {
             onClick={() => {
               dispatch({ type: "checked" });
             }}
+            readOnly
           />
           {state.todoitem.todo}
           <button>X</button>
         </li>
         {/* TodoItemComp를 만들어 map을 통해 내용 출력 */}
+        {state.todolist.map((todoitem) => (
+          <TodoItemComp todoitem={todoitem} dispatch={dispatch} />
+        ))}
       </ul>
     </div>
   );
