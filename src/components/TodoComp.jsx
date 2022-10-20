@@ -58,6 +58,15 @@ function reducer(state, action) {
         ...state,
         todolist: newTodoList,
       };
+    case "deletelist":
+      // id값을 가져와, id값과 같은 객체를 제외하고 배열 생성
+      const newTodolist = state.todolist.filter(
+        (todoitem) => todoitem.id != action.id
+      );
+      return {
+        ...state,
+        todolist: newTodolist,
+      };
     case "todoInput":
       return {
         ...state,

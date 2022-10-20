@@ -12,7 +12,13 @@ const TodoItemComp = (props) => {
         readOnly
       />
       {todoitem.todo}
-      <button>X</button>
+      <button
+        onClick={() => {
+          dispatch({ type: "deletelist", id: todoitem.id });
+        }}
+      >
+        X
+      </button>
     </li>
   );
 };
